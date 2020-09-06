@@ -1,0 +1,468 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Artist MetaData Lookup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style type="text/css">
+      #login, #loggedin {
+        display: none;
+      }
+      .text-overflow {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 500px;
+      }
+      .sectionTitle {
+        margin-bottom: 0px;
+        font-weight: bold;
+        float: left;
+        width: 100%; 
+      }
+
+      .albumCard {
+        float: left; 
+        margin-right: 10px; 
+        margin-bottom: 10px;
+        background-color: #ffffff;
+        padding: 0px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+      }
+
+      .albumCard:hover {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+
+      }
+
+      .searchItem {
+        width: 50%;
+        background-color: #eeeeee;
+        height: 50px;
+        float: left;
+        border-style: solid;
+        line-height: 50px;
+        padding-left: 20px;
+        border-color: #000000;
+      }
+
+      .searchItem:hover {
+        background-color: #e0e0e0;
+      }
+
+
+
+    </style>
+  </head>
+
+  <body style="padding: 20px;">
+    <div class="">
+      <div id="login">
+        <h1>Artist MetaData Lookup</h1>
+        <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+      </div>
+      <div id="loggedin">
+    
+      <p class="sectionTitle">Search Artist:</p>
+      <input type="text" class="form-control" id="searchTerm" placeholder="Enter artist name">
+      <div id="searchTerms"></div>
+
+      </br>
+      </br>
+
+      <p class="sectionTitle">Artist Name:</p>
+      <h1 id="artistName"></h1>
+
+      <p class="sectionTitle" >Monthly Listeners:</p>
+      <h1 id="Followers"></h1>
+
+      <p class="sectionTitle" >Popularity %:</p>
+      <h1 id="Popularity"></h1>
+
+      <p class="sectionTitle" style="margin-bottom: 10px;">Genres:</p>
+      <div  id="genres" style=""></div>
+      
+      <p class="sectionTitle" style="margin-bottom: 10px; margin-top: 10px;">Top Tracks:</p>
+      <div class="row" id="topTracks" style=""></div>
+
+      <p class="sectionTitle" style="margin-bottom: 10px; margin-top: 10px;">Artist Albums:</p>
+      <div class="row" id="artistAlbums" style=""></div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalSongTitle">Song Name</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Key</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>acousticness</td>
+                      <td id="acousticness"></td>
+                    </tr>
+                    <tr>
+                      <td>danceability</td>
+                      <td id="danceability"></td>
+                    </tr>
+                    <tr>
+                      <td>duration_ms</td>
+                      <td id="duration_ms"></td>
+                    </tr>
+                    <tr>
+                      <td>energy</td>
+                      <td id="energy"></td>
+                    </tr>
+                    <tr>
+                      <td>instrumentalness</td>
+                      <td id="instrumentalness"></td>
+                    </tr>
+                    <tr>
+                      <td>key</td>
+                      <td id="key"></td>
+                    </tr>
+                    <tr>
+                      <td>liveness</td>
+                      <td id="liveness"></td>
+                    </tr>
+                    <tr>
+                      <td>loudness</td>
+                      <td id="loudness"></td>
+                    </tr>
+                    <tr>
+                      <td>mode</td>
+                      <td id="mode"></td>
+                    </tr>
+                    <tr>
+                      <td>speechiness</td>
+                      <td id="speechiness"></td>
+                    </tr>
+                    <tr>
+                      <td>tempo</td>
+                      <td id="tempo"></td>
+                    </tr>
+                    <tr>
+                      <td>valence</td>
+                      <td id="valence"></td>
+                    </tr>                
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+      (function() {
+
+        /**
+         * Obtains parameters from the hash of the URL
+         * @return Object
+         */
+        function getHashParams() {
+          var hashParams = {};
+          var e, r = /([^&;=]+)=?([^&;]*)/g,
+              q = window.location.hash.substring(1);
+          while ( e = r.exec(q)) {
+             hashParams[e[1]] = decodeURIComponent(e[2]);
+          }
+          return hashParams;
+        }
+
+
+        var params = getHashParams();
+
+        var access_token = params.access_token,
+            refresh_token = params.refresh_token,
+            error = params.error;
+
+        if (error) {
+          alert('There was an error during the authentication');
+        } else {
+
+          setTimeout(function(){
+
+            try{
+
+              if (access_token) {
+
+                $.ajax({
+                    url: 'https://api.spotify.com/v1/me',
+                    headers: {
+                      'Authorization': 'Bearer ' + access_token
+                    },
+                    success: function(response) {
+
+                      $('#login').hide();
+                      $('#loggedin').show();
+
+                      searchForArtists("passion") 
+  
+                    }
+                });
+
+              } else {
+                // render initial screen
+                $('#login').show();
+                $('#loggedin').hide();
+              }
+
+            }catch{
+              window.location.replace("http://localhost:8888/");
+
+            }
+
+          }, 500)
+      
+          function selectArtist(id){
+
+            console.log(id)
+            searchArtist(id);
+            $("#topTracks").empty()
+            searchTopTracks(id)
+            $("#artistAlbums").empty()
+            searchAlbums(id, 0);
+          
+          
+          }
+
+
+
+
+
+          function searchForArtists(searchTerm){
+
+            
+            $.ajax({
+                url: 'https://api.spotify.com/v1/search?query='+searchTerm+'&offset=0&limit=20&type=artist',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+                  console.log(response)                  
+                  $("#searchTerms").empty();
+                  
+                  response.artists.items.forEach(function(item){
+                    $("#searchTerms").append('<div type="button" class="btn btn-primary searchItem" style="color: #000000; line-height: 30px;" value="'+item.id+'">'+item.name+'</div>');
+                  })
+
+
+                }
+            });
+
+          }
+
+
+
+          var $val = $.fn.val;
+          $.fn.val = function(newVal) {
+            if (this.attr('id') === 'searchTerm') this.trigger('input');
+            $val.call(this, newVal);
+          }
+
+          $('#searchTerm').on('input', function(value) {
+            var searchTerm = document.getElementById('searchTerm').value
+            searchTerm = searchTerm.replace(" ", "+")
+            searchForArtists(searchTerm)            
+            
+          });
+
+
+
+
+          function searchArtist(id){
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/artists/'+id,
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+                  console.log(response)
+
+                  document.getElementById("artistName")
+                  document.getElementById("artistName").innerHTML = response.name
+                  document.getElementById("Followers").innerHTML = response.followers.total
+                  document.getElementById("Popularity").innerHTML = response.popularity + ' out of 100'
+                  $("#genres").empty()
+                  response.genres.forEach(element => $("#genres").append( "<button type='button' style='float: left; margin-right: 5px' class='btn btn-success'>"+element.toUpperCase()+"</button>" ));
+                  
+
+                }
+            });
+
+          }
+
+
+          function searchAlbums(id, offset){
+            $.ajax({
+                url: 'https://api.spotify.com/v1/artists/'+id+'/albums?&limit=50&offset='+offset*50,
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+
+                  
+                  response.items.forEach(function(element) {
+
+                    var releaseDate = new Date(element.release_date)
+                  
+                    releaseDate = releaseDate.toDateString().split(' ').slice(1).join(' ')
+                   
+                    $("#artistAlbums").append( "<div class='card albumCard col-md-2' style='min-width: 250px;'><a href='"+element.external_urls.spotify+"' target='_blank'><img src='"+element.images[0].url+"' class='card-img-top' alt=''></a><div class='card-body'><h5 class='card-title'>"+element.name+"</h5><p class='card-text'>"+ releaseDate + " | " + element.album_group.toUpperCase() + "</p></div></div>")
+                   
+                  })
+                  
+                  
+                  if(response.items.length == 50){
+                    searchAlbums(id, offset + 1)
+                  }
+
+                  
+                }
+            });
+
+          }
+
+
+          function searchTopTracks(id){
+            $.ajax({
+                url: 'https://api.spotify.com/v1/artists/'+id+'/top-tracks?country=US',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+
+                  console.log(response)
+                  
+
+                  response.tracks.forEach(function(element) {
+
+                    var releaseDate = new Date(element.album.release_date)
+                    releaseDate = releaseDate.toDateString().split(' ').slice(1).join(' ')
+
+                    var artists = "";
+
+
+
+                    element.artists.forEach(function(artist, index){
+                      if(index == 0){
+                        artists += artist.name
+                      }else{
+                        artists += ", " + artist.name
+
+                      }
+                    })
+
+                    
+                    $("#topTracks").append( "<div class='card albumCard col-md-2' style='min-width: 250px;'><a href='"+element.external_urls.spotify+"' target='_blank' ><img src='"+element.album.images[0].url+"' class='card-img-top' alt=''></a><div class='card-body'><h5 class='card-title' style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;'>"+element.name+"</h5><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary info' value='"+element.id+ "|||&|" + element.name +"'>Info</button><p class='card-text' style='margin-top: 20px;'>"+element.popularity+"% out of 100</p><p class='card-text'>"+artists+"</p><p class='card-text'>"+ releaseDate + " | " + element.album.album_type.toUpperCase() + "</p></div></div>")
+
+                  })
+
+                  
+
+
+                }
+            });
+            
+          }
+
+          function getSongModalInfo(songId, name){
+            $.ajax({
+                url: 'https://api.spotify.com/v1/audio-features/'+songId,
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+
+                  console.log(response)
+                  document.getElementById("modalSongTitle").innerHTML = name
+                  
+                  document.getElementById("acousticness").innerHTML = response.acousticness
+                  document.getElementById("danceability").innerHTML = response.danceability
+                  document.getElementById("duration_ms").innerHTML = response.duration_ms
+                  document.getElementById("energy").innerHTML = response.energy
+                  document.getElementById("instrumentalness").innerHTML = response.instrumentalness
+                  document.getElementById("key").innerHTML = response.key
+                  document.getElementById("liveness").innerHTML = response.liveness
+                  document.getElementById("loudness").innerHTML = response.loudness
+                  document.getElementById("mode").innerHTML = response.mode
+                  document.getElementById("speechiness").innerHTML = response.speechiness
+                  document.getElementById("tempo").innerHTML = response.tempo
+                  document.getElementById("valence").innerHTML = response.valence
+
+
+                }
+            })
+          }
+
+
+          $("#topTracks").on('click', '.info', function(){
+            songVal = $(this)[0].attributes[3].value
+
+            console.log(songVal)
+            songId = songVal.split("|||&|")[0]
+            songName = songVal.split("|||&|")[1]
+
+            getSongModalInfo(songId, songName)
+
+            $('#exampleModal').modal('show')
+
+          });
+
+
+          $("#searchTerms").on('click', '.searchItem', function(){
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            var data = $(this)[0].attributes[3].value
+            selectArtist(data)
+    
+          });
+
+        }
+        
+      })();
+    </script>
+  </body>
+</html>
+
