@@ -21,20 +21,8 @@
         width: 100%; 
       }
 
-      .albumCard {
-        float: left; 
-        margin-right: 10px; 
-        margin-bottom: 10px;
-        background-color: #ffffff;
-        padding: 0px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-
-      }
-
-      .albumCard:hover {
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-
+      .tableItem:hover {
+        background-color: #e0e0e0;
       }
 
       .searchItem {
@@ -85,89 +73,171 @@
       <div  id="genres" style=""></div>
       
       <p class="sectionTitle" style="margin-bottom: 10px; margin-top: 10px;">Top Tracks:</p>
-      <div class="row" id="topTracks" style=""></div>
+      
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Album</th>
+            <th scope="col">Name</th>
+            <th scope="col">Artists</th>
+            <th scope="col">Popularity</th>            
+            <th scope="col">Release Date</th>
+            <th scope="col">Album Type</th>
+            <th scope="col">Info</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody id="topTracks">
+
+        </tbody>
+      </table>
 
       <p class="sectionTitle" style="margin-bottom: 10px; margin-top: 10px;">Artist Albums:</p>
-      <div class="row" id="artistAlbums" style=""></div>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Album</th>
+            <th scope="col">Name</th>
+            <th scope="col">Release Date</th>
+            <th scope="col">Album Type</th>
+            <th scope="col"># of Songs</th>
+            <th scope="col">Available Markets</th>
+            <th scope="col">Info</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody id="artistAlbums">
+
+        </tbody>
+      </table>
 
 
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalSongTitle">Song Name</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Key</th>
-                      <th scope="col">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>acousticness</td>
-                      <td id="acousticness"></td>
-                    </tr>
-                    <tr>
-                      <td>danceability</td>
-                      <td id="danceability"></td>
-                    </tr>
-                    <tr>
-                      <td>duration_ms</td>
-                      <td id="duration_ms"></td>
-                    </tr>
-                    <tr>
-                      <td>energy</td>
-                      <td id="energy"></td>
-                    </tr>
-                    <tr>
-                      <td>instrumentalness</td>
-                      <td id="instrumentalness"></td>
-                    </tr>
-                    <tr>
-                      <td>key</td>
-                      <td id="key"></td>
-                    </tr>
-                    <tr>
-                      <td>liveness</td>
-                      <td id="liveness"></td>
-                    </tr>
-                    <tr>
-                      <td>loudness</td>
-                      <td id="loudness"></td>
-                    </tr>
-                    <tr>
-                      <td>mode</td>
-                      <td id="mode"></td>
-                    </tr>
-                    <tr>
-                      <td>speechiness</td>
-                      <td id="speechiness"></td>
-                    </tr>
-                    <tr>
-                      <td>tempo</td>
-                      <td id="tempo"></td>
-                    </tr>
-                    <tr>
-                      <td>valence</td>
-                      <td id="valence"></td>
-                    </tr>                
-                  </tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              </div>
+      <!-- Modal For Album Data-->
+      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+        <div class="modal-dialog" role="document" style="max-width: 1000px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalAlbumTitle">Album Name</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Key</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>popularity</td>
+                    <td id="albumPopularity"></td>
+                  </tr>
+                  <tr>
+                    <td>label</td>
+                    <td id="albumLabel"></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Info</th>
+                    <th scope="col">Link</th>
+                  </tr>
+                </thead>
+                <tbody id="albumTracks">
+
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- Modal For Song Data-->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="border-width: 7px; border-style: solid; border-radius: 7px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalSongTitle">Song Name</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Key</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>acousticness</td>
+                    <td id="acousticness"></td>
+                  </tr>
+                  <tr>
+                    <td>danceability</td>
+                    <td id="danceability"></td>
+                  </tr>
+                  <tr>
+                    <td>duration_ms</td>
+                    <td id="duration_ms"></td>
+                  </tr>
+                  <tr>
+                    <td>energy</td>
+                    <td id="energy"></td>
+                  </tr>
+                  <tr>
+                    <td>instrumentalness</td>
+                    <td id="instrumentalness"></td>
+                  </tr>
+                  <tr>
+                    <td>key</td>
+                    <td id="key"></td>
+                  </tr>
+                  <tr>
+                    <td>liveness</td>
+                    <td id="liveness"></td>
+                  </tr>
+                  <tr>
+                    <td>loudness</td>
+                    <td id="loudness"></td>
+                  </tr>
+                  <tr>
+                    <td>mode</td>
+                    <td id="mode"></td>
+                  </tr>
+                  <tr>
+                    <td>speechiness</td>
+                    <td id="speechiness"></td>
+                  </tr>
+                  <tr>
+                    <td>tempo</td>
+                    <td id="tempo"></td>
+                  </tr>
+                  <tr>
+                    <td>valence</td>
+                    <td id="valence"></td>
+                  </tr>                
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       </div>
     </div>
@@ -221,6 +291,7 @@
                       $('#loggedin').show();
 
                       searchForArtists("passion") 
+                      selectArtist("6piIAIurGAryW5h1rqQC16")
   
                     }
                 });
@@ -240,7 +311,7 @@
       
           function selectArtist(id){
 
-            console.log(id)
+
             searchArtist(id);
             $("#topTracks").empty()
             searchTopTracks(id)
@@ -265,8 +336,7 @@
                 body: {
 
                 },
-                success: function(response) {
-                  console.log(response)                  
+                success: function(response) {             
                   $("#searchTerms").empty();
                   
                   response.artists.items.forEach(function(item){
@@ -308,7 +378,6 @@
 
                 },
                 success: function(response) {
-                  console.log(response)
 
                   document.getElementById("artistName")
                   document.getElementById("artistName").innerHTML = response.name
@@ -338,12 +407,16 @@
                   
                   response.items.forEach(function(element) {
 
+
                     var releaseDate = new Date(element.release_date)
                   
                     releaseDate = releaseDate.toDateString().split(' ').slice(1).join(' ')
+
+                    availableMarkets = element.available_markets.join(", ")
+
                    
-                    $("#artistAlbums").append( "<div class='card albumCard col-md-2' style='min-width: 250px;'><a href='"+element.external_urls.spotify+"' target='_blank'><img src='"+element.images[0].url+"' class='card-img-top' alt=''></a><div class='card-body'><h5 class='card-title'>"+element.name+"</h5><p class='card-text'>"+ releaseDate + " | " + element.album_group.toUpperCase() + "</p></div></div>")
                    
+                    $("#artistAlbums").append("<tr class='tableItem'><td><img src='"+element.images[0].url+"' style='height: 40px; width: 40px'></td><td>"+element.name+"</td><td>"+ releaseDate + "</td><td>" + element.album_group.toUpperCase() + "</td><td>"+element.total_tracks+"</td><td>"+availableMarkets+"</td><td><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary albumInfo' value='"+element.id+ "|||&|" + element.name +"'>Info</button></td><td><a href='"+element.external_urls.spotify+"' target='_blank' ><button type='button' class='btn btn-success info'>Link</button></a></td></tr>")
                   })
                   
                   
@@ -368,9 +441,7 @@
 
                 },
                 success: function(response) {
-
-                  console.log(response)
-                  
+                 
 
                   response.tracks.forEach(function(element) {
 
@@ -391,7 +462,7 @@
                     })
 
                     
-                    $("#topTracks").append( "<div class='card albumCard col-md-2' style='min-width: 250px;'><a href='"+element.external_urls.spotify+"' target='_blank' ><img src='"+element.album.images[0].url+"' class='card-img-top' alt=''></a><div class='card-body'><h5 class='card-title' style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;'>"+element.name+"</h5><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary info' value='"+element.id+ "|||&|" + element.name +"'>Info</button><p class='card-text' style='margin-top: 20px;'>"+element.popularity+"% out of 100</p><p class='card-text'>"+artists+"</p><p class='card-text'>"+ releaseDate + " | " + element.album.album_type.toUpperCase() + "</p></div></div>")
+                    $("#topTracks").append( "<tr class='tableItem'><td><img src='"+element.album.images[0].url+"' style='height: 40px; width: 40px'></td><td>"+element.name+"</td><td>"+artists+"</td><td>"+element.popularity+"% out of 100</td><td>"+ releaseDate + "</td><td>" + element.album.album_type.toUpperCase() + "</td><td><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary info' value='"+element.id+ "|||&|" + element.name +"'>Info</button></td><td><a href='"+element.external_urls.spotify+"' target='_blank' ><button type='button' class='btn btn-success info'>Link</button></a></td></tr>")
 
                   })
 
@@ -414,7 +485,6 @@
                 },
                 success: function(response) {
 
-                  console.log(response)
                   document.getElementById("modalSongTitle").innerHTML = name
                   
                   document.getElementById("acousticness").innerHTML = response.acousticness
@@ -435,11 +505,41 @@
             })
           }
 
+          function getAlbumModalInfo(albumId, name){
+            $.ajax({
+                url: 'https://api.spotify.com/v1/albums/'+albumId,
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                },
+                body: {
+
+                },
+                success: function(response) {
+
+                  document.getElementById("modalAlbumTitle").innerHTML = name
+
+                  console.log(response)
+                  document.getElementById("albumLabel").innerHTML = response.label
+                  document.getElementById("albumPopularity").innerHTML = response.popularity
+
+                  $("#albumTracks").empty()
+                  response.tracks.items.forEach(function(element){
+                    console.log(element)
+
+                    $("#albumTracks").append( "<tr class='tableItem'><td>"+element.name+"</td><td><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary info' value='"+element.id+ "|||&|" + element.name +"'>Info</button></td><td><a href='"+element.external_urls.spotify+"' target='_blank' ><button type='button' class='btn btn-success info'>Link</button></a></td></tr>")
+
+                  })
+                  
+
+
+                }
+            })
+          }
+
 
           $("#topTracks").on('click', '.info', function(){
             songVal = $(this)[0].attributes[3].value
 
-            console.log(songVal)
             songId = songVal.split("|||&|")[0]
             songName = songVal.split("|||&|")[1]
 
@@ -449,6 +549,35 @@
 
           });
 
+
+          $("#albumTracks").on('click', '.info', function(){
+            songVal = $(this)[0].attributes[3].value
+
+            songId = songVal.split("|||&|")[0]
+            songName = songVal.split("|||&|")[1]
+
+            getSongModalInfo(songId, songName)
+
+            $('#exampleModal').modal('show')
+
+          });
+
+
+          $("#artistAlbums").on('click', '.albumInfo', function(){
+            albumVal = $(this)[0].attributes[3].value
+
+            albumId = albumVal.split("|||&|")[0]
+            albumName = albumVal.split("|||&|")[1]
+
+            getAlbumModalInfo(albumId, albumName)
+
+            $('#exampleModal2').modal('show')
+
+          });
+
+
+
+          
 
           $("#searchTerms").on('click', '.searchItem', function(){
             event.stopPropagation();
