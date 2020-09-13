@@ -118,7 +118,7 @@
 
        <!-- Modal For Genre Data-->
        <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
-        <div class="modal-dialog" role="document" style="max-width: 1000px;">
+        <div class="modal-dialog" role="document" style="max-width: 95%;">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="modalGenreTitle">Genre Name</h5>
@@ -206,7 +206,7 @@
 
       <!-- Modal For Song Data-->
       <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="border-width: 7px; border-style: solid; border-radius: 7px;">
+        <div class="modal-dialog" role="document" style="border-width: 8px; border-style: solid; border-radius: 7px;">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="modalSongTitle">Song Name</h5>
@@ -392,7 +392,7 @@
 
 
           $.ajax({
-                url: 'https://api.spotify.com/v1/browse/categories?limit=50',        
+                url: 'https://api.spotify.com/v1/browse/categories?country=US&limit=50',        
                 headers: {
                   'Authorization': 'Bearer ' + access_token,
                   
@@ -528,7 +528,7 @@
 
 
             $.ajax({
-                url: 'https://api.spotify.com/v1/browse/categories/'+page+'/playlists?limit=50',        
+                url: 'https://api.spotify.com/v1/browse/categories/'+page+'/playlists?country=US&limit=50',        
                 headers: {
                   'Authorization': 'Bearer ' + access_token,
                   
@@ -600,7 +600,7 @@
 
           function searchAlbums(id, offset){
             $.ajax({
-                url: 'https://api.spotify.com/v1/artists/'+id+'/albums?&limit=50&offset='+offset*50,
+                url: 'https://api.spotify.com/v1/artists/'+id+'/albums?&limit=50&country=US&offset='+offset*50,
                 headers: {
                   'Authorization': 'Bearer ' + access_token,
                 },
