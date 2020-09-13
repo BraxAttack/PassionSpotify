@@ -69,8 +69,13 @@
       <p class="sectionTitle" >Popularity %:</p>
       <h1 id="Popularity"></h1>
 
-      <p class="sectionTitle" style="margin-bottom: 10px;">Genres:</p>
+      <p class="sectionTitle" style="margin-bottom: 10px;">Artist Genres:</p>
       <div  id="genres" style=""></div>
+
+      <p class="sectionTitle" style="margin-bottom: 10px;">Search Relevance By Genres:</p>
+      <div  id="searchGenres" style=""></div>
+
+      
       
       <p class="sectionTitle" style="margin-bottom: 10px; margin-top: 10px;">Top Tracks:</p>
       
@@ -111,6 +116,43 @@
         </tbody>
       </table>
 
+       <!-- Modal For Genre Data-->
+       <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+        <div class="modal-dialog" role="document" style="max-width: 1000px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalGenreTitle">Genre Name</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Info</th>
+                    <th scope="col">Tracks</th>
+                    <th scope="col">Followers</th>
+                    <th scope="col">Artist Songs</th>
+                    
+                    <th scope="col">Link</th>
+                  </tr>
+                </thead>
+                <tbody id="genrePlaylists">
+        
+                </tbody>
+              </table>
+        
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal For Album Data-->
       <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
@@ -249,10 +291,7 @@
     <script>
       (function() {
 
-        /**
-         * Obtains parameters from the hash of the URL
-         * @return Object
-         */
+
         function getHashParams() {
           var hashParams = {};
           var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -269,6 +308,8 @@
         var access_token = params.access_token,
             refresh_token = params.refresh_token,
             error = params.error;
+
+        var selectedArtistID = "";
 
         if (error) {
           alert('There was an error during the authentication');
@@ -311,7 +352,7 @@
       
           function selectArtist(id){
 
-
+            selectedArtistID = id;
             searchArtist(id);
             $("#topTracks").empty()
             searchTopTracks(id)
@@ -350,6 +391,170 @@
           }
 
 
+          $.ajax({
+                url: 'https://api.spotify.com/v1/browse/categories?limit=50',        
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                  
+                },
+                body: {
+
+                },
+                success: function(response) {             
+                
+                  $("#searchGenres").empty()
+
+                  response.categories.items.forEach(element => $("#searchGenres").append( "<button type='button' style='float: left; margin-right: 5px; margin-bottom: 5px;' class='btn btn-primary genreButton' value='"+element.id+"'>"+element.name+"</button>" ));
+
+
+                }
+            });
+
+          function searhPlaylistSongs(id, offset, tableID){
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/playlists/'+id+'/tracks?offset='+offset+'&limit=100',        
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                  
+                },
+                body: {
+
+                },
+                success: function(response) {  
+                  console.log(response)
+
+                  indx = offset;
+                  response.items.forEach(function(item){
+                    console.log(tableID)
+
+                    indx += 1;
+
+                    var isInSong = false;
+                    item.track.artists.forEach(function(artist){
+                      if(artist.id == selectedArtistID){
+                        isInSong = true;
+                      }
+                    })
+                    if(isInSong){
+
+                      var table = document.getElementById(tableID);
+                      // Create an empty <tr> element and add it to the 1st position of the table:
+                      var row = table.insertRow(-1);
+
+                      // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                      var cell1 = row.insertCell(0);
+                      var cell2 = row.insertCell(1);
+                      var cell3 = row.insertCell(2);
+
+                      // Add some text to the new cells:
+                      cell1.innerHTML = item.track.name;
+                      cell2.innerHTML = item.track.popularity;
+                      cell3.innerHTML = indx;
+                    }
+                  })
+
+                  if(response.items.length == 100 && response.total > 100 + offset){
+                  
+                    searhPlaylistSongs(id, offset + 100, tableID)
+                  }
+
+                }
+              });
+
+          }
+
+
+          function searchPlaylist(id){
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/playlists/'+id,        
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                  
+                },
+                body: {
+
+                },
+                success: function(response) {             
+                  
+                  console.log(response)
+                  songHtml = "<table id='playlistArtistSongsID"+id+"'><tr><th>name</th><th>pop</th><th>idx</th></tr>"
+
+                  var indx = 0;
+
+                  response.tracks.items.forEach(function(element){
+                    indx += 1;
+
+                    var isInSong = false;
+                    try{
+                      element.track.artists.forEach(function(artist){
+                      if(artist.id == selectedArtistID){
+                        isInSong = true;
+                      }
+                    })
+                    }catch{
+
+                    }
+
+                    if(isInSong){
+                      songHtml += "<tr><td>"+element.track.name+"</td><td>"+element.track.popularity+"</td><td>"+indx+"</td></tr>";
+                    }
+
+                  })
+
+
+                  songHtml += "</table>"
+                  document.getElementById("playlistFollowers"+id).innerHTML = response.followers.total
+                  document.getElementById("playlistArtistSongsHolder"+id).innerHTML = songHtml
+                  
+                  if(response.tracks.items.length == 100 && response.tracks.total > 100){
+                    searhPlaylistSongs(id, 100, "playlistArtistSongsID"+id)
+                  }
+
+                }
+            });
+
+
+
+          }
+
+          
+          function searchGenre(page){
+
+            
+            $('#modalGenreTitle').text(page.toUpperCase())
+
+
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/browse/categories/'+page+'/playlists?limit=50',        
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                  
+                },
+                body: {
+
+                },
+                success: function(response) {             
+                  
+
+                  $("#genrePlaylists").empty()
+                  response.playlists.items.forEach(function(element){
+                    $("#genrePlaylists").append( "<tr class='tableItem'><td>"+element.owner.display_name+"</td><td>"+element.name+"</td><td>"+element.description+"</td><td><button class='btn btn-primary playlistItem' value='"+element.id+"'>Info</button></td><td>"+element.tracks.total+"</td><td id='playlistFollowers"+element.id+"'>"+""+"</td><td id='playlistArtistSongsHolder"+element.id+"'>"+""+"</td><td><a href='"+element.external_urls.spotify+"' target='_blank' ><button type='button' class='btn btn-success info'>Link</button></a></td></tr>")
+
+                  })
+
+
+                }
+            });
+
+
+
+
+          }
+
+
 
           var $val = $.fn.val;
           $.fn.val = function(newVal) {
@@ -384,7 +589,7 @@
                   document.getElementById("Followers").innerHTML = response.followers.total
                   document.getElementById("Popularity").innerHTML = response.popularity + ' out of 100'
                   $("#genres").empty()
-                  response.genres.forEach(element => $("#genres").append( "<button type='button' style='float: left; margin-right: 5px' class='btn btn-success'>"+element.toUpperCase()+"</button>" ));
+                  response.genres.forEach(element => $("#genres").append( "<button type='button' style='float: left; margin-right: 5px; margin-bottom: 5px;' class='btn btn-success'>"+element.toUpperCase()+"</button>" ));
                   
 
                 }
@@ -517,15 +722,11 @@
                 success: function(response) {
 
                   document.getElementById("modalAlbumTitle").innerHTML = name
-
-                  console.log(response)
                   document.getElementById("albumLabel").innerHTML = response.label
                   document.getElementById("albumPopularity").innerHTML = response.popularity
 
                   $("#albumTracks").empty()
                   response.tracks.items.forEach(function(element){
-                    console.log(element)
-
                     $("#albumTracks").append( "<tr class='tableItem'><td>"+element.name+"</td><td><button type='button' style='float: left; margin-right: 6px;' class='btn btn-primary info' value='"+element.id+ "|||&|" + element.name +"'>Info</button></td><td><a href='"+element.external_urls.spotify+"' target='_blank' ><button type='button' class='btn btn-success info'>Link</button></a></td></tr>")
 
                   })
@@ -576,7 +777,22 @@
           });
 
 
+          $("#searchGenres").on('click', '.genreButton', function(){
+            genreVal = $(this)[0].attributes[3].value
 
+            searchGenre(genreVal)
+
+            $('#exampleModal3').modal('show')
+
+          });
+
+          $("#genrePlaylists").on('click', '.playlistItem', function(){
+            playlist = $(this)[0].attributes[1].value
+
+            searchPlaylist(playlist)
+
+
+          });
           
 
           $("#searchTerms").on('click', '.searchItem', function(){
