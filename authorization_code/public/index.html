@@ -600,7 +600,7 @@
 
           function searchAlbums(id, offset){
             $.ajax({
-                url: 'https://api.spotify.com/v1/artists/'+id+'/albums?&limit=50&country=US&offset='+offset*50,
+                url: 'https://api.spotify.com/v1/artists/'+id+'/albums?&limit=50&offset='+offset*50,
                 headers: {
                   'Authorization': 'Bearer ' + access_token,
                 },
